@@ -1,0 +1,37 @@
+tailwind css
+    - https://tailwindcss.com/docs/installation
+    - https://www.youtube.com/watch?v=cZc4Jn5nK3k tailwind custom themes
+
+create profile page 
+    - add pfp set(default set for now, custom later)
+    - my Account, Payments, Settings
+
+
+dashboard
+    - My Pools, Create Pool, Find new Pool, Recently Played, pool history
+
+Create Support page
+Create footer
+    - policy page, support, faq, etc (can link to empty pages)
+
+more database design
+    - finalize tables and cols
+    - api hooks to get info
+    - watch for type errors
+
+add forget password
+
+create pool
+    - add event/timeline fields for scoring (lifecycle)
+
+Pool Card
+    - preview of pool
+    - % bought/open cells
+    - personally owned cells
+    - event/timeline
+    - cost/payout model
+    
+redo buyCell api call to include update to user_pools and general cleanup
+
+git config --global user.email "you@example.com"
+git config --global user.name "Your Name"

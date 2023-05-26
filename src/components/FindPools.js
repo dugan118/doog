@@ -26,7 +26,7 @@ export default function FindPools(){
             let link = '';
             link = link.concat('/pools/', pool.pool_id);
             ret.push(
-                <div className="">
+                <div key={pool.pool_id} className="">
                     <Link href={link}> 
                         <PoolCard pool_id= {pool.pool_id} />
                     </Link>

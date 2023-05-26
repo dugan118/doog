@@ -5,6 +5,9 @@ tailwind css
 create profile page 
     - add pfp set(default set for now, custom later)
     - my Account, Payments, Settings
+    - page not rendering properly
+        - on refresh, renders default pic colors
+        - form values not updating til next sign in
 
 
 dashboard
@@ -33,5 +36,8 @@ Pool Card
     
 redo buyCell api call to include update to user_pools and general cleanup
 
-git config --global user.email "you@example.com"
-git config --global user.name "Your Name"
+
+
+Payments
+    - when you click buy cells. locks selected cells in for x minutes (send to socket.io). 
+        - show x minutes countdown while payment screen appears(Modal? grey the back, clicking out cancels selection)

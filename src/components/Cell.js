@@ -5,13 +5,7 @@ export default function Cell(props) {
 
     const [hover, setHover] = useState(false);
 
-    const handleClick = () => {
-        props.onCellClick(props.id);
-    };
-
-    const toggleHover = () => {
-        setHover(!hover);
-    };
+    
   
     return (
         <div

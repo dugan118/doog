@@ -17,11 +17,11 @@ export async function updateBoughtCellsServer(props, selectedCells){
     headers: { "Content-Type": "application/json" }
   });
 }
-
+ 
 
 export default function Board( props ) {
     const arr = Array(100).fill(0);
-    const [ownedBy,setOwnedBy] = setState([arr]);
+    const [ownedBy,setOwnedBy] = useState([arr]);
     const [boughtCells, setBoughtCells] = useState(props.bcells.map(Number));
     const [selectedCells, setSelectedCells] = useState([]);
 

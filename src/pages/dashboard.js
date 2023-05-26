@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
 
-import Layout from '@/components/Layout';
+import SecureLayout from '@/components/SecureLayout';
 import TopPanel from '@/components/TopPanel';
 
 
@@ -11,20 +11,14 @@ import TopPanel from '@/components/TopPanel';
 
 
 export default function dashboard() {
-    const { data: session, status } = useSession();
-    const router = useRouter(); 
-    if(!session){
-        //router.push('/');
-    }
 
-    
     return(
         <>
-        <Layout>
-            <div className="h-[800px] container mx-auto bg-green-200 ">
+        <SecureLayout>
+            <div className=" min-h-[800px] h-full container mx-auto bg-green-200 ">
                 <TopPanel />
             </div>
-        </Layout>
+        </SecureLayout>
         </>
         
     )

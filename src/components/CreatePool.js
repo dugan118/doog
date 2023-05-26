@@ -39,6 +39,7 @@ export default function CreatePool(){
 
     return(
     <>
+        <p className= "text-lg font-medium text-center m-4">Create a Pool</p>
         <form className="w-full max-w-lg mx-auto" onSubmit={handleSubmit}>
         <input type="hidden" id="ownerID" name="ownerID" value={session?.user.id} />
             <div className="flex flex-wrap -mx-3 mb-6">{/* Row 1 */}

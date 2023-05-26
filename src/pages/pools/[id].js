@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 
 
 
+
 async function getAllPoolIDs(){
     const res = await fetch('http://localhost:3000/api/pools/getAllPoolIDs');
     const paths = await res.json(); 

@@ -2,14 +2,31 @@ import Head from 'next/head';
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 
 
 
-const Layout = ({ children = null }) => {
 
+const SecureLayout = ({ children = null }) => {
+    const { data: session, status } = useSession();
+    const router = useRouter();
 
+    useEffect(() => {
+        console.log("status:");
+        console.log(status);
+        if (status === "unauthenticated") {
+            router.push("http://localhost:3000/");
+        }
+    },[status]);
 
+    if (status === "loading") {
+        return <p>Loading...</p>
+    }
+    
+    if (status === "authenticated") {
     return (
         <>
             <Head>
@@ -27,7 +44,8 @@ const Layout = ({ children = null }) => {
                 <Footer />
             </div>
         </>
-    )
+    )}
+    return <></>;
 }
 
-export default Layout;
+export default SecureLayout;

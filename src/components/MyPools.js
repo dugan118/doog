@@ -45,7 +45,7 @@ export default function MyPools(){
             let link = '';
             link = link.concat('/pools/', pool.pool_id);
             ret.push(
-                <div className="">
+                <div key={pool.pool_id} className="">
                     <Link href={link}> 
                         <PoolCard pool_id= {pool.pool_id} />
                     </Link>
@@ -61,7 +61,7 @@ export default function MyPools(){
     <>
         <div className= "text-center bg-white m-4 ">
             <p className= "text-lg font-medium">Active Pools</p>
-            <div className="h-full w-full ">
+            <div className="h-full w-full">
                 {renderPools()}
             </div>
         </div>

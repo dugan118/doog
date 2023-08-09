@@ -1,4 +1,6 @@
 import { useSession } from 'next-auth/react';
+import React, { useState, useEffect } from 'react';
+import EventSelector from '@/components/EventSelector';
 /* 
     form info:
         Name of Organization
@@ -9,33 +11,38 @@ import { useSession } from 'next-auth/react';
             Set Approval process (auto accepts/admin approves applicant)
 */
 
-const handleSubmit = async (e) => {
-    //e.preventDefault();
 
-    const data = {
-        'orgName': document.getElementById('grid-org-name').value,
-        //'isCharity': document.getElementById('grid-availability').value,
-        'pricePerBlock': document.getElementById('grid-price-per-block').value,
-        'payoutModel': document.getElementById('grid-payout-model').value,
-        'availability': document.getElementById('grid-availability').value,
-        'ownerID' : document.getElementById('ownerID').value,
-        'name' : document.getElementById('grid-pool-name').value,
-    }
-
-    //api call to create pool
-    const res = await fetch("http://localhost:3000/api/pools/createPool", {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: { "Content-Type": "application/json" }
-        });
-
-    const success = await res.json();// return poolID in data
-
-
-}
 // Need to add some kind of event/timeline fields for the end of pool
 export default function CreatePool(){
     const { data: session, status } = useSession(); 
+    const [selectedGame, setSelectedGame] = useState('No Game Selected')
+
+    const handleSubmit = async (e) => {
+        if(selectedGame === 'No Game Selected'){
+            e.preventDefault()
+            console.log(selectedGame)
+            return
+        }
+        //e.preventDefault();
+        const data = {
+            'orgName': document.getElementById('grid-org-name').value,
+            //'isCharity': document.getElementById('grid-availability').value,
+            'pricePerBlock': document.getElementById('grid-price-per-block').value,
+            'payoutModel': document.getElementById('grid-payout-model').value,
+            'availability': document.getElementById('grid-availability').value,
+            'ownerID' : document.getElementById('ownerID').value,
+            'name' : document.getElementById('grid-pool-name').value,
+            'espn_id' : selectedGame,
+        }
+        //api call to create pool
+        const res = await fetch("http://localhost:3000/api/pools/createPool", {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: { "Content-Type": "application/json" }
+            });
+    
+        const success = await res.json();// return poolID in data
+    }
 
     return(
     <>
@@ -115,7 +122,10 @@ export default function CreatePool(){
                 </div>
             </div>
             <div className="flex flex-wrap -mx-3 mb-2">{/* Row 4 */} 
-            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0 mx-auto">{/* Col 1 */}
+                <EventSelector setSelectedGame={setSelectedGame} />
+            </div>
+            <div className="flex flex-wrap -mx-3 mb-2">{/* Row 5 */} 
+            <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0 mx-auto text-center">{/* Col 1 */}
                 <button className="bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
                     Create Pool
                 </button>

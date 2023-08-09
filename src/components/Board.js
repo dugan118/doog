@@ -1,7 +1,12 @@
 //import styles from "@/styles/Components.module.css";
 
+import PaymentModal from "@/components/payments/PaymentModal";
+
 import BoughtCells from "@/components/BoughtCells";
 import React, { useState } from 'react';
+
+import { socket } from "@/socket";
+import { useEffect } from 'react';
 
 import Cell from './Cell';
 
@@ -17,16 +22,84 @@ export async function updateBoughtCellsServer(props, selectedCells){
     headers: { "Content-Type": "application/json" }
   });
 }
+
  
 
 export default function Board( props ) {
-    const arr = Array(100).fill(0);
-    const [ownedBy,setOwnedBy] = useState([arr]);
+    //const arr = Array(100).fill(0);
+    //const [ownedBy,setOwnedBy] = useState([arr]);
+    const [rooms, setRooms] = useState([]);
+    const [lockedCells, setLockedCells] = useState([]);
     const [boughtCells, setBoughtCells] = useState(props.bcells.map(Number));
     const [selectedCells, setSelectedCells] = useState([]);
 
-    const renderCell = (id) => {
+    const [isConnected, setIsConnected] = useState(socket.connected);
 
+
+
+    useEffect(() => {     
+      socket.on('connect', () => {
+        setIsConnected(true);
+        console.log('connected')
+        
+      });
+      socket.on('disconnect', () => {
+          console.log('disconnect');
+          setIsConnected(false);
+      });
+      socket.on('updateCells-client', data => {
+          console.log('updateCells-client: ', data)
+          setLockedCells((lockedCells) => lockedCells.concat(data));
+          //if any cell in data == a cell in selectedCells 
+          //then remove *cell* from selectedCells
+          setSelectedCells((prev)=>{
+            let ret=prev
+
+            console.log('selectedCells: ', prev)
+            console.log('lockedCells: ', data)
+            prev.forEach(selectedCell => {
+              console.log('for each ', selectedCell, ' in selectedCells')
+              data.forEach(lockedCell => {
+                console.log('for each ', lockedCell, ' in lockedCells')
+                console.log('if ', selectedCell.toString(), '  == ', lockedCell.toString(), " then:")
+                if(selectedCell.toString() == lockedCell.toString()){
+                  console.log('remove ', selectedCell, ' from selected Cells')
+                  ret=ret.filter( cell => cell!==selectedCell )
+                }
+              })
+            });
+
+
+            return ret;
+            //return arr of selectedCells not in lockedCells
+          })
+          
+      });
+      socket.onAny((event, ...args) => {
+          console.log('onAny-client: ',event, args);
+          console.log('rooms: ', socket.rooms)
+        });
+
+      return () => {
+          socket.off('updateCells-client');
+          socket.off('connect');
+          socket.off('disconnect');
+      }
+  }, [])
+
+  useEffect(() => {
+    let ret = { poolID: props.id, userID: props.userid}
+    console.log('ret: ', ret)
+    socket.emit("Join Room", ret);
+    setRooms(socket.rooms)
+    return () => {
+      socket.emit("Leave Room", ret)
+    }
+
+  }, [])
+
+    const renderCell = (id) => {
+      let isLocked = lockedCells.includes(id);
       let isBought = boughtCells.includes(id);
       let isSelected = selectedCells.includes(id);
       return (
@@ -35,6 +108,7 @@ export default function Board( props ) {
           id={id}
           isBought={isBought}
           isSelected={isSelected}
+          isLocked={isLocked}
           onCellClick={handleCellClick}
         />
       );
@@ -72,6 +146,8 @@ export default function Board( props ) {
         console.log("props:");
         console.log(props);
         updateBoughtCellsServer(props, selectedCells);
+        //send to socket
+        socket.emit('updateCells-server', {boardID: props.id, boughtCells: selectedCells})
         //update client
         const x = boughtCells.concat(selectedCells);
         setBoughtCells(x);
@@ -80,6 +156,7 @@ export default function Board( props ) {
 
     const handleCellClick = (id) => {
         if (boughtCells.includes(id)) return;
+        if (lockedCells.includes(id)) return;
         if (selectedCells.includes(id)) {
         setSelectedCells(selectedCells.filter((cellId) => cellId !== id));
         } else {
@@ -96,12 +173,15 @@ export default function Board( props ) {
       <>
         <div  className="h-full w-5/6 mt-5 mx-auto bg-slate-200 text-center">
           <div className="relative content-center mt-5 mx-auto w-[500px] h-[500px]">{renderBoard()}</div>
-          <button onClick={handleBuyCells} className='bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'>Buy Cells</button>
+          <PaymentModal cellPrice={props.cellPrice} numCells={selectedCells.length.toString()} handleBuyCells={handleBuyCells} /> 
+          {/* <button onClick={handleBuyCells} className='bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'>Buy Cells</button>*/}
           <button onClick={resetSelected} className='bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'>Reset Selected Cells</button>
           <button onClick={updateCells} className='bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 mx-1 rounded focus:outline-none focus:shadow-outline'>Update Cells</button>
           
           <br />
-          <BoughtCells boughtCells={boughtCells} selectedCells={selectedCells}/>
+          <p>Rooms: {rooms}</p>
+          <p>cellPrice: {props.cellPrice}</p>
+          <BoughtCells boughtCells={[]} selectedCells={selectedCells}/>
         </div>
       </>
         

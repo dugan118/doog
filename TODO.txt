@@ -41,3 +41,43 @@ redo buyCell api call to include update to user_pools and general cleanup
 Payments
     - when you click buy cells. locks selected cells in for x minutes (send to socket.io). 
         - show x minutes countdown while payment screen appears(Modal? grey the back, clicking out cancels selection)
+        - TODO: onclose cancel timer
+
+
+
+-- work on timer: needs to stop when clicked out, cause an 'event' to pop when it runs out.
+When buy cell button is clicked. pop up payment modal. starts timer
+if checkout process finishes in under the timer, then 
+    lock cells(send to socket)
+    update server (pools & users_pools(myCells))
+    update client (myCells)
+else (timer finished before chekout)
+    reset selected cells and prompt user
+    send back to board page to begin again
+
+
+
+add support for a sports api
+    - free plans ~100 calls per day. 
+    - figure out how many and which calls are needed. 
+    - pull data on the hour every hour, then store in database. 
+    - check data to see if any actions are required. 
+ - calls:
+    - at pool creation: pull all data in advance before start. 
+    - at fixed intervals: check for finished games
+        - maybe doesnt need an api call. run checks based on game start time. 
+        - pull final scores for every finished game in the time interval 
+        - once a day? payouts next calendar day.  
+    - once in a while: use GET /seasons to populate DB with all possible games to play from. 
+        - start of each season, pull full season?
+
+- use 'https://cdn.espn.com/core/mlb/boxscore?xhr=1&gameId=GAMEID' to get box score. 
+    - for home score: gamepackageJSON.header.competitions[0].competitors[0].score 
+    - for away score: gamepackageJSON.header.competitions[0].competitors[1].score 
+
+- gets the first 999 games of the regular season NBA: "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?limit=999&dates=20221018-20230615"
+    - each event includes
+        - date & time
+        - game id 
+        - competitors
+            - scores, home/away, names

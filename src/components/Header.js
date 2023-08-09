@@ -40,7 +40,7 @@ const menuItems = [
   {
     label: 'Support',
     icon: HeartIcon,
-    href: '/',
+    href: '/admin',
   },
   {
     label: 'Logout',
